@@ -7,6 +7,7 @@
 class LeptoInstVisitor
     : public llvm::InstVisitor<LeptoInstVisitor, std::string> {
 public:
+  std::string visitGetElementPtrInst(llvm::GetElementPtrInst &);
   std::string visitInstruction(llvm::Instruction &);
   std::string visitLoadInst(llvm::LoadInst &);
   std::string visitStoreInst(llvm::StoreInst &);
