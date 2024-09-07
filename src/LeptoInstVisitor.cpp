@@ -30,6 +30,16 @@ string LeptoInstVisitor::getId(Value *value) {
   return buffer;
 }
 
+string LeptoInstVisitor::visitInstruction(Instruction &I) { return "inst"; }
+
+string LeptoInstVisitor::visitLoadInst(LoadInst &LI) {
+  string output;
+  output += getId(&LI);
+  output += " = load";
+  output += " " + getId(LI.getPointerOperand());
+  return output;
+}
+
 string LeptoInstVisitor::visitStoreInst(StoreInst &SI) {
   string output = "store";
   output += " " + getId(SI.getValueOperand());
@@ -37,4 +47,3 @@ string LeptoInstVisitor::visitStoreInst(StoreInst &SI) {
   return output;
 }
 
-string LeptoInstVisitor::visitInstruction(Instruction &I) { return "inst"; }
