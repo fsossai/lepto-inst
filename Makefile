@@ -1,0 +1,15 @@
+BUILD_DIR ?= build
+export JOBS ?= 4
+export MAKEFLAGS += --no-print-directory
+
+compile: build
+	cmake --build $(BUILD_DIR)
+
+build:
+	cmake -S . -B $(BUILD_DIR)
+
+clean:
+	rm -rf build
+	rm -f compile_commands.json
+
+.PHONY: build clean compile
