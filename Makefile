@@ -3,7 +3,7 @@ export JOBS ?= 4
 export MAKEFLAGS += --no-print-directory
 
 compile: build
-	cmake --build $(BUILD_DIR)
+	cmake --build $(BUILD_DIR) -j $(JOBS)
 
 build:
 	cmake -S . -B $(BUILD_DIR)

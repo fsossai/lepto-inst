@@ -3,9 +3,9 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 
-using namespace llvm;
+#include "LeptoInstVisitor.hpp"
 
-namespace {
+using namespace llvm;
 
 struct LeptoInstPass : public FunctionPass {
   static char ID;
@@ -13,16 +13,15 @@ struct LeptoInstPass : public FunctionPass {
   LeptoInstPass() : FunctionPass(ID) {}
 
   bool runOnFunction(Function &F) override {
+    LeptoInstVisitor LIV;
     for (auto &BB : F) {
       for (auto &I : BB) {
-        // TODO
+        errs() << LIV.visit(I) << "\n";
       }
     }
     return false;
   }
 };
-
-} // namespace
 
 char LeptoInstPass::ID = 0;
 static RegisterPass<LeptoInstPass> X("LeptoInst",

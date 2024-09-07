@@ -1,6 +1,6 @@
 add_llvm_library(
   LeptoInst
   MODULE
-  LeptoInst.cpp
+  LeptoInstVisitor.cpp
   Pass.cpp
 )
