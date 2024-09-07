@@ -1,11 +1,15 @@
+#include <regex>
 #include <string>
 
-#include "llvm/IR/Instructions.h"
 #include "llvm/IR/InstVisitor.h"
+#include "llvm/IR/Instructions.h"
 
-class LeptoInstVisitor : public llvm::InstVisitor<LeptoInstVisitor, std::string> {
+class LeptoInstVisitor
+    : public llvm::InstVisitor<LeptoInstVisitor, std::string> {
 public:
-  std::string visitInstruction(llvm::Instruction &I);
-  std::string visitStoreInst(llvm::StoreInst &SI);
-};
+  std::string visitInstruction(llvm::Instruction &);
+  std::string visitStoreInst(llvm::StoreInst &);
 
+private:
+  std::string getId(llvm::Value *value);
+};

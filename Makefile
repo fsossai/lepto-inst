@@ -11,5 +11,6 @@ build:
 clean:
 	rm -rf build
 	rm -f compile_commands.json
+	$(MAKE) -C test
 
 .PHONY: build clean compile
