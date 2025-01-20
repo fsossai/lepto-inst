@@ -124,3 +124,11 @@ string LeptoInstVisitor::visitCall(CallInst &CI) {
   output += ")";
   return output;
 }
+
+string LeptoInstVisitor::visitICmpInst(ICmpInst &I) {
+  string output;
+  output += getId(&I) + " = icmp ";
+  output += getId(I.getOperand(0)) + ", ";
+  output += getId(I.getOperand(1));
+  return output;
+}
