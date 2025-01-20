@@ -56,8 +56,12 @@ string LeptoInstVisitor::getId(Value *value) {
 
 string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   string output;
-  output += getId(&GEP) + " = gep";
-  output += " " + getId(GEP.getPointerOperand());
+  output += getId(&GEP) + " = gep " + getId(GEP.getPointerOperand());
+
+  for (auto idx = GEP.idx_begin(); idx != GEP.idx_end(); ++idx) {
+    output += ", ";
+    output += getId(*idx);
+  }
   return output;
 }
 
