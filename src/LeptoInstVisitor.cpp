@@ -30,40 +30,51 @@ string demangleName(const std::string &mangledName) {
   }
 }
 
+bool fetchConstantString(Value *value, string &result) {
+  auto GV = dyn_cast<llvm::GlobalVariable>(value);
+  if (GV == nullptr || !GV->isConstant()) {
+    return false;
+  }
+  auto ATy = dyn_cast<llvm::ArrayType>(GV->getValueType());
+  if (ATy == nullptr) {
+    return false;
+  }
+  if (!ATy->getElementType()->isIntegerTy(8)) {
+    return false;
+  }
+  auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer());
+  if (!CDA->isString()) {
+    return false;
+  }
+
+  string tmp = CDA->getAsCString().str();
+  const int MAX_LENGTH = 30;
+  if (tmp.size() > MAX_LENGTH) {
+    result = "\"" + tmp.substr(0, MAX_LENGTH - 3) + "...\"";
+  } else {
+    result = "\"" + tmp + "\"";
+  }
+  return true;
+}
+
 string LeptoInstVisitor::getId(Value *value) {
+  string buffer;
+
   if (auto F = dyn_cast<Function>(value)) {
     return "@" + F->getName().str();
   }
-
-  string buffer;
-  raw_string_ostream stream(buffer);
-  value->print(stream);
-  stream.flush();
 
   if (auto CI = dyn_cast<ConstantInt>(value)) {
     return to_string(CI->getSExtValue());
   }
 
-  // fetching a global const string is awful
-  if (auto GV = dyn_cast<GlobalVariable>(value)) {
-    if (GV->isConstant()) {
-      if (auto ATy = dyn_cast<ArrayType>(GV->getValueType())) {
-        if (ATy->getElementType()->isIntegerTy(8)) {
-          if (auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer())) {
-            if (CDA->isString()) {
-              string str = CDA->getAsCString().str();
-              const int MAX_LENGTH = 30;
-              if (str.size() > MAX_LENGTH) {
-                return "\"" + str.substr(0, MAX_LENGTH - 3) + "...\"";
-              } else {
-                return "\"" + str + "\"";
-              }
-            }
-          }
-        }
-      }
-    }
+  if (fetchConstantString(value, buffer)) {
+    return buffer;
   }
+
+  raw_string_ostream stream(buffer);
+  value->print(stream);
+  stream.flush();
 
   if (isa<Instruction>(value) || isa<Argument>(value)) {
     regex pattern(R"([ ]+(%[^ ]+))");
