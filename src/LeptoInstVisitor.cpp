@@ -44,6 +44,27 @@ string LeptoInstVisitor::getId(Value *value) {
     return to_string(CI->getSExtValue());
   }
 
+  // fetching a global const string is awful
+  if (auto GV = dyn_cast<GlobalVariable>(value)) {
+    if (GV->isConstant()) {
+      if (auto ATy = dyn_cast<ArrayType>(GV->getValueType())) {
+        if (ATy->getElementType()->isIntegerTy(8)) {
+          if (auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer())) {
+            if (CDA->isString()) {
+              string str = CDA->getAsCString().str();
+              const int MAX_LENGTH = 30;
+              if (str.size() > MAX_LENGTH) {
+                return "\"" + str.substr(0, MAX_LENGTH - 3) + "...\"";
+              } else {
+                return "\"" + str + "\"";
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
   if (isa<Instruction>(value) || isa<Argument>(value)) {
     regex pattern(R"([ ]+(%[^ ]+))");
     smatch match;
