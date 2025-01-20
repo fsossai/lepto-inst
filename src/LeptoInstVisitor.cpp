@@ -112,23 +112,20 @@ string LeptoInstVisitor::visitCallInst(CallInst &CI) {
     output += getId(&CI) += " = ";
   }
 
-  string fName = demangleName(F.getName().str());
+  string displayName = demangleName(F.getName().str());
 
+  // removing trailing `const`
+  displayName = regex_replace(displayName, regex(" const$"), "");
   // removing arguments
-  regex pattern("([^(]+)");
-  smatch match;
-  string displayName;
-  if (regex_search(fName, match, pattern)) {
-    displayName = match[0].str();
-  }
+  displayName = regex_replace(displayName, regex("([(][^(]*[)]$)"), "");
 
   // removing <templates>
-  pattern = "(<.+>)";
   string oldDisplayName;
   do {
     oldDisplayName = displayName;
-    displayName = regex_replace(oldDisplayName, pattern, "");
+    displayName = regex_replace(oldDisplayName, regex("(<.+>)"), "");
   } while (oldDisplayName != displayName);
+
   output += "call " + displayName + " (";
 
   for (uint32_t i = 0; i < CI.arg_size(); i++) {
