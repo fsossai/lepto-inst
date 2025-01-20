@@ -154,3 +154,12 @@ string LeptoInstVisitor::visitBitCastInst(BitCastInst &BC) {
   output += getId(&BC) += " = bitcast " + getId(BC.getOperand(0));
   return output;
 }
+
+string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
+  string output;
+  output += "br";
+  if (BI.isConditional()) {
+    output += " " + getId(BI.getCondition());
+  }
+  return output;
+}
