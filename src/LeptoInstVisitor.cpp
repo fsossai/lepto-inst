@@ -57,7 +57,13 @@ string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   return output;
 }
 
-string LeptoInstVisitor::visitInstruction(Instruction &I) { return "inst"; }
+string LeptoInstVisitor::visitInstruction(Instruction &I) {
+  string output;
+  raw_string_ostream stream(output);
+  I.print(stream);
+  stream.flush();
+  return output;
+}
 
 string LeptoInstVisitor::visitLoadInst(LoadInst &LI) {
   string output;
@@ -86,7 +92,7 @@ string LeptoInstVisitor::visitPHINode(PHINode &PHI) {
   return output;
 }
 
-string LeptoInstVisitor::visitCall(CallInst &CI) {
+string LeptoInstVisitor::visitCallInst(CallInst &CI) {
   string output;
   if (!CI.getFunction()) {
     return "call";
@@ -130,5 +136,11 @@ string LeptoInstVisitor::visitICmpInst(ICmpInst &I) {
   output += getId(&I) + " = icmp ";
   output += getId(I.getOperand(0)) + ", ";
   output += getId(I.getOperand(1));
+  return output;
+}
+
+string LeptoInstVisitor::visitBitCastInst(BitCastInst &BC) {
+  string output;
+  output += getId(&BC) += " = bitcast " + getId(BC.getOperand(0));
   return output;
 }

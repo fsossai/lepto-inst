@@ -14,8 +14,9 @@ public:
   std::string visitLoadInst(llvm::LoadInst &);
   std::string visitStoreInst(llvm::StoreInst &);
   std::string visitPHINode(llvm::PHINode &);
-  std::string visitCall(llvm::CallInst &);
+  std::string visitCallInst(llvm::CallInst &);
   std::string visitICmpInst(llvm::ICmpInst &);
+  std::string visitBitCastInst(llvm::BitCastInst &);
 
   enum Verbosity { NUMBERS = 0x1 };
 

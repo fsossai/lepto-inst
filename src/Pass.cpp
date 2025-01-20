@@ -17,7 +17,7 @@ struct LeptoInstPass : public FunctionPass {
     LIV.verbosity = LeptoInstVisitor::NUMBERS;
     for (auto &BB : F) {
       for (auto &I : BB) {
-        errs() << LIV.visit(I) << "\n";
+        errs() << LIV.visit(I) << "\n\n";
       }
     }
     return false;
