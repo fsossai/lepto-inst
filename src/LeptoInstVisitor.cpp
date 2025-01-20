@@ -31,6 +31,10 @@ string demangleName(const std::string &mangledName) {
 }
 
 string LeptoInstVisitor::getId(Value *value) {
+  if (auto F = dyn_cast<Function>(value)) {
+    return "@" + F->getName().str();
+  }
+
   string buffer;
   raw_string_ostream stream(buffer);
   value->print(stream);
@@ -62,6 +66,12 @@ string LeptoInstVisitor::visitInstruction(Instruction &I) {
   raw_string_ostream stream(output);
   I.print(stream);
   stream.flush();
+
+  // remove white spaces at the beginning
+  int ws = -1;
+  while (output[++ws] == ' ')
+    ;
+  output = output.substr(ws, output.size() - ws);
   return output;
 }
 
@@ -94,10 +104,10 @@ string LeptoInstVisitor::visitPHINode(PHINode &PHI) {
 
 string LeptoInstVisitor::visitCallInst(CallInst &CI) {
   string output;
-  if (!CI.getFunction()) {
+  if (!CI.getCalledFunction()) {
     return "call";
   }
-  auto &F = *CI.getFunction();
+  auto &F = *CI.getCalledFunction();
   if (!F.getReturnType()->isVoidTy()) {
     output += getId(&CI) += " = ";
   }

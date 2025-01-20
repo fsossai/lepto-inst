@@ -18,10 +18,6 @@ public:
   std::string visitICmpInst(llvm::ICmpInst &);
   std::string visitBitCastInst(llvm::BitCastInst &);
 
-  enum Verbosity { NUMBERS = 0x1 };
-
-  Verbosity verbosity = NUMBERS;
-
 private:
   std::string getId(llvm::Value *value);
 };
