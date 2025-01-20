@@ -20,6 +20,10 @@ string LeptoInstVisitor::getId(Value *value) {
   value->print(stream);
   stream.flush();
 
+  if (auto CI = dyn_cast<ConstantInt>(value)) {
+    return to_string(CI->getSExtValue());
+  }
+
   if (isa<Instruction>(value) || isa<Argument>(value)) {
     regex pattern(R"([ ]+(%[^ ]+))");
     smatch match;
@@ -50,5 +54,18 @@ string LeptoInstVisitor::visitStoreInst(StoreInst &SI) {
   string output = "store";
   output += " " + getId(SI.getValueOperand());
   output += " to " + getId(SI.getPointerOperand());
+  return output;
+}
+
+string LeptoInstVisitor::visitPHINode(PHINode &PHI) {
+  string output;
+  output += getId(&PHI) + " = phi ";
+  for (uint32_t i = 0; i < PHI.getNumIncomingValues(); i++) {
+    auto V = PHI.getIncomingValue(i);
+    output += getId(V);
+    if ((i + 1) < PHI.getNumIncomingValues()) {
+      output += ", ";
+    }
+  }
   return output;
 }
