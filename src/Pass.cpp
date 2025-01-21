@@ -14,7 +14,6 @@ struct LeptoInstPass : public FunctionPass {
 
   bool runOnFunction(Function &F) override {
     LeptoInstVisitor LIV;
-    LIV.verbosity = LeptoInstVisitor::NUMBERS;
     for (auto &BB : F) {
       for (auto &I : BB) {
         errs() << LIV.visit(I) << "\n\n";
