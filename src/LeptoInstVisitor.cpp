@@ -198,6 +198,9 @@ string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
 }
 
 string LeptoInstVisitor::visitValue(Value &V) {
+  if (auto I = dyn_cast<Instruction>(&V)) {
+    return this->visit(I);
+  }
   string output;
   raw_string_ostream stream(output);
   V.print(stream);
