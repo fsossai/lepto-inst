@@ -18,6 +18,7 @@ public:
   std::string visitICmpInst(llvm::ICmpInst &);
   std::string visitBitCastInst(llvm::BitCastInst &);
   std::string visitBranchInst(llvm::BranchInst &);
+  std::string visitValue(llvm::Value &);
 
 private:
   std::string getId(llvm::Value *value);

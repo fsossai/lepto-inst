@@ -196,3 +196,11 @@ string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
   }
   return output;
 }
+
+string LeptoInstVisitor::visitValue(Value &V) {
+  string output;
+  raw_string_ostream stream(output);
+  V.print(stream);
+  stream.flush();
+  return output;
+}
