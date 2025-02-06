@@ -60,7 +60,7 @@ bool fetchConstantString(Value *value, string &result) {
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
 string LeptoInstVisitor::visitAllocaInst(AllocaInst &AI) {
-  return getId(&AI) + " = alloca " + getType(AI.getAllocatedType());
+  return getId(&AI) + " = alloca " + getTypeStr(AI.getAllocatedType());
 }
 
 string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
@@ -173,14 +173,18 @@ string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
 string LeptoInstVisitor::visitValue(Value &V) {
   if (auto I = dyn_cast<Instruction>(&V)) {
     return this->visit(I);
-  } else if (isa<Argument>(&V)) {
-    return "arg " + getId(&V);
+  } else if (auto A = dyn_cast<Argument>(&V)) {
+    return this->visitArgument(*A);
   }
   string output;
   raw_string_ostream stream(output);
   V.print(stream);
   stream.flush();
   return output;
+}
+
+string LeptoInstVisitor::visitArgument(Argument &A) {
+  return "arg " + getId(&A) + " " + getTypeStr(A.getType());
 }
 
 string LeptoInstVisitor::getId(Value *value) {
@@ -212,7 +216,7 @@ string LeptoInstVisitor::getId(Value *value) {
   return buffer;
 }
 
-string LeptoInstVisitor::getType(Type *type) {
+string LeptoInstVisitor::getTypeStr(Type *type) {
   if (auto ST = dyn_cast<StructType>(type)) {
     if (ST->hasName()) {
       return detemplate(ST->getName().str());
@@ -225,7 +229,7 @@ string LeptoInstVisitor::getType(Type *type) {
   raw_string_ostream stream(buffer);
   type->print(stream);
   stream.flush();
-  return buffer;
+  return detemplate(buffer);
 }
 
 string LeptoInstVisitor::detemplate(string s) {

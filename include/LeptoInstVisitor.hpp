@@ -11,6 +11,7 @@ public:
 
   std::string operator()(llvm::Value &);
   std::string visitAllocaInst(llvm::AllocaInst &);
+  std::string visitArgument(llvm::Argument &);
   std::string visitBitCastInst(llvm::BitCastInst &);
   std::string visitBranchInst(llvm::BranchInst &);
   std::string visitCallInst(llvm::CallInst &);
@@ -24,6 +25,6 @@ public:
 
 private:
   std::string getId(llvm::Value *value);
-  std::string getType(llvm::Type *type);
+  std::string getTypeStr(llvm::Type *type);
   std::string detemplate(std::string s);
 };
