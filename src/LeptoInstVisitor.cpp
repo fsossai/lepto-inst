@@ -86,6 +86,8 @@ string LeptoInstVisitor::getId(Value *value) {
   return buffer;
 }
 
+string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
+
 string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   string output;
   output += getId(&GEP) + " = gep " + getId(GEP.getPointerOperand());

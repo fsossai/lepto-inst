@@ -9,6 +9,7 @@ class LeptoInstVisitor
 public:
   LeptoInstVisitor() = default;
 
+  std::string operator()(llvm::Value &);
   std::string visitGetElementPtrInst(llvm::GetElementPtrInst &);
   std::string visitInstruction(llvm::Instruction &);
   std::string visitLoadInst(llvm::LoadInst &);
