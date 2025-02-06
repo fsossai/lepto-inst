@@ -60,7 +60,7 @@ bool fetchConstantString(Value *value, string &result) {
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
 string LeptoInstVisitor::visitAllocaInst(AllocaInst &AI) {
-  return getId(&AI) + " == Alloca " + getType(AI.getAllocatedType());
+  return getId(&AI) + " = alloca " + getType(AI.getAllocatedType());
 }
 
 string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
@@ -133,11 +133,7 @@ string LeptoInstVisitor::visitCallInst(CallInst &CI) {
   displayName = regex_replace(displayName, regex("([(][^(]*[)]$)"), "");
 
   // removing <templates>
-  string oldDisplayName;
-  do {
-    oldDisplayName = displayName;
-    displayName = regex_replace(oldDisplayName, regex("(<.+>)"), "");
-  } while (oldDisplayName != displayName);
+  displayName = detemplate(displayName);
 
   output += "call " + displayName + " (";
 
@@ -219,7 +215,7 @@ string LeptoInstVisitor::getId(Value *value) {
 string LeptoInstVisitor::getType(Type *type) {
   if (auto ST = dyn_cast<StructType>(type)) {
     if (ST->hasName()) {
-      return ST->getName().str();
+      return detemplate(ST->getName().str());
     } else {
       return "<unnamed>";
     }
@@ -230,4 +226,13 @@ string LeptoInstVisitor::getType(Type *type) {
   type->print(stream);
   stream.flush();
   return buffer;
+}
+
+string LeptoInstVisitor::detemplate(string s) {
+  string prev_s;
+  do {
+    prev_s = s;
+    s = regex_replace(prev_s, regex("(<.+>)"), "");
+  } while (prev_s != s);
+  return s;
 }

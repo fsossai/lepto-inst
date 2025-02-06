@@ -25,4 +25,5 @@ public:
 private:
   std::string getId(llvm::Value *value);
   std::string getType(llvm::Type *type);
+  std::string detemplate(std::string s);
 };
