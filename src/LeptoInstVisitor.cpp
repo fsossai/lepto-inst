@@ -202,6 +202,8 @@ string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
 string LeptoInstVisitor::visitValue(Value &V) {
   if (auto I = dyn_cast<Instruction>(&V)) {
     return this->visit(I);
+  } else if (auto A = dyn_cast<Argument>(&V)) {
+    return "arg" + getId(&V);
   }
   string output;
   raw_string_ostream stream(output);
