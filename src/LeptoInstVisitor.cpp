@@ -57,36 +57,11 @@ bool fetchConstantString(Value *value, string &result) {
   return true;
 }
 
-string LeptoInstVisitor::getId(Value *value) {
-  string buffer;
-
-  if (auto F = dyn_cast<Function>(value)) {
-    return "@" + F->getName().str();
-  }
-
-  if (auto CI = dyn_cast<ConstantInt>(value)) {
-    return to_string(CI->getSExtValue());
-  }
-
-  if (fetchConstantString(value, buffer)) {
-    return buffer;
-  }
-
-  raw_string_ostream stream(buffer);
-  value->print(stream);
-  stream.flush();
-
-  if (isa<Instruction>(value) || isa<Argument>(value)) {
-    regex pattern(R"([ ]+(%[^ ]+))");
-    smatch match;
-    if (regex_search(buffer, match, pattern)) {
-      return match[1].str();
-    }
-  }
-  return buffer;
-}
-
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
+
+string LeptoInstVisitor::visitAllocaInst(AllocaInst &AI) {
+  return getId(&AI) + " == Alloca " + getType(AI.getAllocatedType());
+}
 
 string LeptoInstVisitor::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   string output;
@@ -202,12 +177,57 @@ string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
 string LeptoInstVisitor::visitValue(Value &V) {
   if (auto I = dyn_cast<Instruction>(&V)) {
     return this->visit(I);
-  } else if (auto A = dyn_cast<Argument>(&V)) {
-    return "arg" + getId(&V);
+  } else if (isa<Argument>(&V)) {
+    return "arg " + getId(&V);
   }
   string output;
   raw_string_ostream stream(output);
   V.print(stream);
   stream.flush();
   return output;
+}
+
+string LeptoInstVisitor::getId(Value *value) {
+  string buffer;
+
+  if (auto F = dyn_cast<Function>(value)) {
+    return "@" + F->getName().str();
+  }
+
+  if (auto CI = dyn_cast<ConstantInt>(value)) {
+    return to_string(CI->getSExtValue());
+  }
+
+  if (fetchConstantString(value, buffer)) {
+    return buffer;
+  }
+
+  raw_string_ostream stream(buffer);
+  value->print(stream);
+  stream.flush();
+
+  if (isa<Instruction>(value) || isa<Argument>(value)) {
+    regex pattern(R"([ ]+(%[^ ]+))");
+    smatch match;
+    if (regex_search(buffer, match, pattern)) {
+      return match[1].str();
+    }
+  }
+  return buffer;
+}
+
+string LeptoInstVisitor::getType(Type *type) {
+  if (auto ST = dyn_cast<StructType>(type)) {
+    if (ST->hasName()) {
+      return ST->getName().str();
+    } else {
+      return "<unnamed>";
+    }
+  }
+
+  string buffer;
+  raw_string_ostream stream(buffer);
+  type->print(stream);
+  stream.flush();
+  return buffer;
 }
