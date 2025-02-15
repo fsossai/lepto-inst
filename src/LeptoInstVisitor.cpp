@@ -16,46 +16,12 @@
 using namespace std;
 using namespace llvm;
 
-string demangleName(const std::string &mangledName) {
-  int status = 0;
-  char *demangled =
-      abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
-
-  if (status == 0 && demangled) {
-    string result(demangled);
-    free(demangled);
-    return result;
-  } else {
-    return mangledName;
-  }
-}
-
-bool fetchConstantString(Value *value, string &result) {
-  auto GV = dyn_cast<llvm::GlobalVariable>(value);
-  if (GV == nullptr || !GV->isConstant()) {
-    return false;
-  }
-  auto ATy = dyn_cast<llvm::ArrayType>(GV->getValueType());
-  if (ATy == nullptr) {
-    return false;
-  }
-  if (!ATy->getElementType()->isIntegerTy(8)) {
-    return false;
-  }
-  auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer());
-  if (!CDA->isString()) {
-    return false;
-  }
-
-  string tmp = CDA->getAsCString().str();
-  const int MAX_LENGTH = 30;
-  if (tmp.size() > MAX_LENGTH) {
-    result = "\"" + tmp.substr(0, MAX_LENGTH - 3) + "...\"";
-  } else {
-    result = "\"" + tmp + "\"";
-  }
-  return true;
-}
+string demangleName(const string &mangledName);
+string detemplate(string s);
+bool fetchConstantString(Value *value, string &result);
+string getId(Value *value);
+string getTypeStr(Type *type);
+string shortnenFunctionName(string name);
 
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
@@ -85,6 +51,28 @@ string LeptoInstVisitor::visitInstruction(Instruction &I) {
   while (output[++ws] == ' ')
     ;
   output = output.substr(ws, output.size() - ws);
+  return output;
+}
+
+string LeptoInstVisitor::visitInvokeInst(InvokeInst &II) {
+  string output;
+  if (!II.getCalledFunction()) {
+    return "invoke";
+  }
+  auto &F = *II.getCalledFunction();
+  if (!F.getReturnType()->isVoidTy()) {
+    output += getId(&II) += " = ";
+  }
+
+  output += "invoke " + shortnenFunctionName(F.getName().str()) + " (";
+
+  for (uint32_t i = 0; i < II.arg_size(); i++) {
+    output += getId(II.getArgOperand(i));
+    if ((i + 1) < II.arg_size()) {
+      output += ", ";
+    }
+  }
+  output += ")";
   return output;
 }
 
@@ -125,17 +113,7 @@ string LeptoInstVisitor::visitCallInst(CallInst &CI) {
     output += getId(&CI) += " = ";
   }
 
-  string displayName = demangleName(F.getName().str());
-
-  // removing trailing `const`
-  displayName = regex_replace(displayName, regex(" const$"), "");
-  // removing arguments
-  displayName = regex_replace(displayName, regex("([(][^(]*[)]$)"), "");
-
-  // removing <templates>
-  displayName = detemplate(displayName);
-
-  output += "call " + displayName + " (";
+  output += "call " + shortnenFunctionName(F.getName().str()) + " (";
 
   for (uint32_t i = 0; i < CI.arg_size(); i++) {
     output += getId(CI.getArgOperand(i));
@@ -187,7 +165,7 @@ string LeptoInstVisitor::visitArgument(Argument &A) {
   return "arg " + getId(&A) + " " + getTypeStr(A.getType());
 }
 
-string LeptoInstVisitor::getId(Value *value) {
+string getId(Value *value) {
   string buffer;
 
   if (auto F = dyn_cast<Function>(value)) {
@@ -216,7 +194,7 @@ string LeptoInstVisitor::getId(Value *value) {
   return buffer;
 }
 
-string LeptoInstVisitor::getTypeStr(Type *type) {
+string getTypeStr(Type *type) {
   if (auto ST = dyn_cast<StructType>(type)) {
     if (ST->hasName()) {
       return detemplate(ST->getName().str());
@@ -232,11 +210,66 @@ string LeptoInstVisitor::getTypeStr(Type *type) {
   return detemplate(buffer);
 }
 
-string LeptoInstVisitor::detemplate(string s) {
+string detemplate(string s) {
   string prev_s;
   do {
     prev_s = s;
     s = regex_replace(prev_s, regex("(<.+>)"), "");
   } while (prev_s != s);
   return s;
+}
+
+string demangleName(const string &mangledName) {
+  int status = 0;
+  char *demangled =
+      abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
+
+  if (status == 0 && demangled) {
+    string result(demangled);
+    free(demangled);
+    return result;
+  } else {
+    return mangledName;
+  }
+}
+
+bool fetchConstantString(Value *value, string &result) {
+  auto GV = dyn_cast<llvm::GlobalVariable>(value);
+  if (GV == nullptr || !GV->isConstant()) {
+    return false;
+  }
+  auto ATy = dyn_cast<llvm::ArrayType>(GV->getValueType());
+  if (ATy == nullptr) {
+    return false;
+  }
+  if (!ATy->getElementType()->isIntegerTy(8)) {
+    return false;
+  }
+  auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer());
+  if (!CDA->isString()) {
+    return false;
+  }
+
+  string tmp = CDA->getAsCString().str();
+  const int MAX_LENGTH = 30;
+  if (tmp.size() > MAX_LENGTH) {
+    result = "\"" + tmp.substr(0, MAX_LENGTH - 3) + "...\"";
+  } else {
+    result = "\"" + tmp + "\"";
+  }
+  return true;
+}
+
+string shortnenFunctionName(string name) {
+  name = demangleName(name);
+
+  // removing trailing `const`
+  name = regex_replace(name, regex(" const$"), "");
+  // removing arguments
+  name = regex_replace(name, regex("([(][^(]*[)]$)"), "");
+
+  // removing <templates>
+  name = detemplate(name);
+
+  return name;
 }

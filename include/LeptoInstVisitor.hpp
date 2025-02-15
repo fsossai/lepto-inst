@@ -20,13 +20,9 @@ public:
   std::string visitGetElementPtrInst(llvm::GetElementPtrInst &);
   std::string visitICmpInst(llvm::ICmpInst &);
   std::string visitInstruction(llvm::Instruction &);
+  std::string visitInvokeInst(llvm::InvokeInst &);
   std::string visitLoadInst(llvm::LoadInst &);
   std::string visitPHINode(llvm::PHINode &);
   std::string visitStoreInst(llvm::StoreInst &);
   std::string visitValue(llvm::Value &);
-
-private:
-  std::string getId(llvm::Value *value);
-  std::string getTypeStr(llvm::Type *type);
-  std::string detemplate(std::string s);
 };
