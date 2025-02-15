@@ -16,12 +16,12 @@
 using namespace std;
 using namespace llvm;
 
-string demangleName(const string &mangledName);
-string detemplate(string s);
-bool fetchConstantString(Value *value, string &result);
-string getId(Value *value);
-string getTypeStr(Type *type);
-string shortnenFunctionName(string name);
+auto demangleName(const string &mangledName) -> string;
+auto detemplate(string s) -> string;
+auto fetchConstantString(Value *value, string &result) -> bool;
+auto getId(Value *value) -> string;
+auto getTypeStr(Type *type) -> string;
+auto shortnenFunctionName(string name) -> string;
 
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
