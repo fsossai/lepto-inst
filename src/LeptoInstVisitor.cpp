@@ -176,6 +176,10 @@ string getId(Value *value) {
     return to_string(CI->getSExtValue());
   }
 
+  if (auto GV = dyn_cast<GlobalValue>(value)) {
+    return "@" + GV->getName().str();
+  }
+
   if (fetchConstantString(value, buffer)) {
     return buffer;
   }
