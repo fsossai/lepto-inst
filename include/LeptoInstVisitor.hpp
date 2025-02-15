@@ -14,6 +14,7 @@ public:
   std::string operator()(llvm::Value &);
   std::string visitAllocaInst(llvm::AllocaInst &);
   std::string visitArgument(llvm::Argument &);
+  std::string visitBinaryOperator(llvm::BinaryOperator &BO);
   std::string visitBitCastInst(llvm::BitCastInst &);
   std::string visitBranchInst(llvm::BranchInst &);
   std::string visitCallInst(llvm::CallInst &);

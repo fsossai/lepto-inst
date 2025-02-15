@@ -165,6 +165,34 @@ string LeptoInstVisitor::visitArgument(Argument &A) {
   return "arg " + getId(&A) + " " + getTypeStr(A.getType());
 }
 
+string LeptoInstVisitor::visitBinaryOperator(BinaryOperator &BO) {
+  string op0 = getId(BO.getOperandUse(0));
+  string op1 = getId(BO.getOperandUse(1));
+  string output = getId(&BO) + " = ";
+  bool matched = true;
+
+  switch (BO.getOpcode()) {
+  case Instruction::Add:
+    output += "add";
+    break;
+  case Instruction::Sub:
+    output += "sub";
+    break;
+  default:
+    matched = false;
+    break;
+  }
+  if (matched) {
+    return output + " " + op0 + ", " + op1;
+  }
+
+  string buffer;
+  raw_string_ostream stream(buffer);
+  BO.print(stream);
+  stream.flush();
+  return buffer;
+}
+
 string getId(Value *value) {
   string buffer;
 
