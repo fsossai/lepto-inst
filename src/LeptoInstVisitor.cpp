@@ -16,7 +16,7 @@
 using namespace std;
 using namespace llvm;
 
-auto demangleName(const string &mangledName) -> string;
+auto demangleName(string mangledName) -> string;
 auto detemplate(string s) -> string;
 auto fetchConstantString(Value *value, string &result) -> bool;
 auto getId(Value *value) -> string;
@@ -187,9 +187,8 @@ string getId(Value *value) {
   string buffer;
 
   if (auto F = dyn_cast<Function>(value)) {
-    return "@" + F->getName().str();
+    return "@" + shortnenFunctionName(F->getName().str());
   }
-
   if (fetchConstantString(value, buffer)) {
     return buffer;
   }
@@ -200,9 +199,8 @@ string getId(Value *value) {
     return to_string(CFP->getValue().convertToDouble());
   }
   if (auto GV = dyn_cast<GlobalValue>(value)) {
-    return "@" + GV->getName().str();
+    return "@" + demangleName(GV->getName().str());
   }
-
 
   buffer = toString(value);
 
@@ -242,7 +240,7 @@ string detemplate(string s) {
   return s;
 }
 
-string demangleName(const string &mangledName) {
+string demangleName(string mangledName) {
   int status = 0;
   char *demangled =
       abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
