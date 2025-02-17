@@ -169,75 +169,18 @@ string LeptoInstVisitor::visitBinaryOperator(BinaryOperator &BO) {
   string op0 = getId(BO.getOperandUse(0));
   string op1 = getId(BO.getOperandUse(1));
   string output = getId(&BO) + " = ";
-  bool matched = true;
-
-  switch (BO.getOpcode()) {
-  case Instruction::Add:
-    output += "add";
-    break;
-  case Instruction::Sub:
-    output += "sub";
-    break;
-  case Instruction::Mul:
-    output += "mul";
-    break;
-  case Instruction::FAdd:
-    output += "fadd";
-    break;
-  case Instruction::FSub:
-    output += "fsub";
-    break;
-  case Instruction::FMul:
-    output += "fmul";
-    break;
-  case Instruction::FDiv:
-    output += "fdiv";
-    break;
-  case Instruction::FRem:
-    output += "frem";
-    break;
-  case Instruction::SDiv:
-    output += "sdiv";
-    break;
-  case Instruction::SRem:
-    output += "srem";
-    break;
-  case Instruction::UDiv:
-    output += "udiv";
-    break;
-  case Instruction::URem:
-    output += "urem";
-    break;
-  case Instruction::Or:
-    output += "or";
-    break;
-  case Instruction::And:
-    output += "and";
-    break;
-  case Instruction::Xor:
-    output += "xor";
-    break;
-  case Instruction::Shl:
-    output += "shl";
-    break;
-  case Instruction::LShr:
-    output += "lshr";
-    break;
-  case Instruction::BinaryOps::AShr:
-    output += "ashr";
-    break;
-  default:
-    matched = false;
-    break;
-  }
-  if (matched) {
-    return output + " " + op0 + ", " + op1;
-  }
 
   string buffer;
   raw_string_ostream stream(buffer);
   BO.print(stream);
   stream.flush();
+
+  regex pattern(R"([^=]+= ([a-z]+))");
+  smatch match;
+  if (regex_search(buffer, match, pattern)) {
+    return output + match[1].str() + " " + op0 + ", " + op1;
+  }
+
   return buffer;
 }
 
