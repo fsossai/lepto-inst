@@ -283,8 +283,8 @@ bool fetchConstantString(Value *value, string &result) {
 string shortnenFunctionName(string name) {
   name = demangleName(name);
 
-  // removing trailing `const`
-  name = regex_replace(name, regex(" const$"), "");
+  // removing `const` specifier
+  name = regex_replace(name, regex(" const"), "");
   // removing arguments
   name = regex_replace(name, regex("([(][^(]*[)]$)"), "");
 
