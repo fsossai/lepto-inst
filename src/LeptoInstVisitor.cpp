@@ -178,6 +178,54 @@ string LeptoInstVisitor::visitBinaryOperator(BinaryOperator &BO) {
   case Instruction::Sub:
     output += "sub";
     break;
+  case Instruction::Mul:
+    output += "mul";
+    break;
+  case Instruction::FAdd:
+    output += "fadd";
+    break;
+  case Instruction::FSub:
+    output += "fsub";
+    break;
+  case Instruction::FMul:
+    output += "fmul";
+    break;
+  case Instruction::FDiv:
+    output += "fdiv";
+    break;
+  case Instruction::FRem:
+    output += "frem";
+    break;
+  case Instruction::SDiv:
+    output += "sdiv";
+    break;
+  case Instruction::SRem:
+    output += "srem";
+    break;
+  case Instruction::UDiv:
+    output += "udiv";
+    break;
+  case Instruction::URem:
+    output += "urem";
+    break;
+  case Instruction::Or:
+    output += "or";
+    break;
+  case Instruction::And:
+    output += "and";
+    break;
+  case Instruction::Xor:
+    output += "xor";
+    break;
+  case Instruction::Shl:
+    output += "shl";
+    break;
+  case Instruction::LShr:
+    output += "lshr";
+    break;
+  case Instruction::BinaryOps::AShr:
+    output += "ashr";
+    break;
   default:
     matched = false;
     break;
