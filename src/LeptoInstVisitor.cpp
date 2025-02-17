@@ -22,6 +22,7 @@ auto fetchConstantString(Value *value, string &result) -> bool;
 auto getId(Value *value) -> string;
 auto getTypeStr(Type *type) -> string;
 auto shortnenFunctionName(string name) -> string;
+template <typename T> auto toString(T *a) -> string;
 
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
@@ -170,10 +171,7 @@ string LeptoInstVisitor::visitBinaryOperator(BinaryOperator &BO) {
   string op1 = getId(BO.getOperandUse(1));
   string output = getId(&BO) + " = ";
 
-  string buffer;
-  raw_string_ostream stream(buffer);
-  BO.print(stream);
-  stream.flush();
+  string buffer = toString(&BO);
 
   regex pattern(R"([^=]+= ([a-z]+))");
   smatch match;
@@ -203,9 +201,7 @@ string getId(Value *value) {
     return buffer;
   }
 
-  raw_string_ostream stream(buffer);
-  value->print(stream);
-  stream.flush();
+  buffer = toString(value);
 
   if (isa<Instruction>(value) || isa<Argument>(value)) {
     regex pattern(R"([ ]+(%[^ ]+))");
@@ -230,6 +226,7 @@ string getTypeStr(Type *type) {
   raw_string_ostream stream(buffer);
   type->print(stream);
   stream.flush();
+
   return detemplate(buffer);
 }
 
@@ -295,4 +292,12 @@ string shortnenFunctionName(string name) {
   name = detemplate(name);
 
   return name;
+}
+
+template <typename T> string toString(T *t) {
+  string buffer;
+  raw_string_ostream stream(buffer);
+  t->print(stream);
+  stream.flush();
+  return buffer;
 }
