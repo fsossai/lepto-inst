@@ -189,17 +189,19 @@ string getId(Value *value) {
     return "@" + F->getName().str();
   }
 
+  if (fetchConstantString(value, buffer)) {
+    return buffer;
+  }
   if (auto CI = dyn_cast<ConstantInt>(value)) {
     return to_string(CI->getSExtValue());
   }
-
+  if (auto CFP = dyn_cast<ConstantFP>(value)) {
+    return to_string(CFP->getValue().convertToDouble());
+  }
   if (auto GV = dyn_cast<GlobalValue>(value)) {
     return "@" + GV->getName().str();
   }
 
-  if (fetchConstantString(value, buffer)) {
-    return buffer;
-  }
 
   buffer = toString(value);
 
