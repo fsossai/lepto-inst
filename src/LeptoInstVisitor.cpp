@@ -105,6 +105,16 @@ string LeptoInstVisitor::visitPHINode(PHINode &PHI) {
   return output;
 }
 
+string LeptoInstVisitor::visitReturnInst(ReturnInst &RI) {
+  string output = "ret ";
+  if (RI.getNumOperands() > 0) {
+    output += getId(RI.getOperandUse(0));
+  } else {
+    output += "void";
+  }
+  return output;
+}
+
 string LeptoInstVisitor::visitCallInst(CallInst &CI) {
   string output;
   if (!CI.getCalledFunction()) {
