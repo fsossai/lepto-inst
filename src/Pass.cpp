@@ -1,6 +1,6 @@
+#include "llvm/Pass.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
-#include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 
 #include "LeptoInstVisitor.hpp"
@@ -13,10 +13,11 @@ struct LeptoInstPass : public FunctionPass {
   LeptoInstPass() : FunctionPass(ID) {}
 
   bool runOnFunction(Function &F) override {
-    LeptoInstVisitor LIV;
+    LeptoInstVisitor lepto;
     for (auto &BB : F) {
       for (auto &I : BB) {
-        errs() << LIV.visit(I) << "\n\n";
+        errs() << "Before: " << I << "\n";
+        errs() << "After: " << lepto(I) << "\n\n";
       }
     }
     return false;
@@ -24,5 +25,4 @@ struct LeptoInstPass : public FunctionPass {
 };
 
 char LeptoInstPass::ID = 0;
-static RegisterPass<LeptoInstPass> X("LeptoInst",
-                                     "Print shorter instructions");
+static RegisterPass<LeptoInstPass> X("LeptoInst", "Print shorter instructions");

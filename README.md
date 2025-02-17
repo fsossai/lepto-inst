@@ -15,8 +15,8 @@ call void @_ZNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEC2IS3_EEPKcRKS3_
 ```
 __After__:
 ```c++
-LeptoInstVisitor LIV;
-errs() << LIV.visit(I) << "\n";
+LeptoInstVisitor lepto;
+errs() << lepto(I) << "\n";
 ```
 
 ```llvm
