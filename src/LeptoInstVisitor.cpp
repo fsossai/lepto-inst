@@ -277,7 +277,7 @@ bool fetchConstantString(Value *value, string &result) {
     return false;
   }
   auto CDA = dyn_cast<ConstantDataArray>(GV->getInitializer());
-  if (CDA == nullptr || !CDA->isString())  {
+  if (CDA == nullptr || !CDA->isString()) {
     return false;
   }
 
