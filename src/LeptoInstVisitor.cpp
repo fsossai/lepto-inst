@@ -23,6 +23,7 @@ auto getId(Value *value) -> string;
 auto getTypeStr(Type *type) -> string;
 auto shortnenFunctionName(string name) -> string;
 template <typename T> auto toString(T *a) -> string;
+auto unescape(string s) -> string;
 
 string LeptoInstVisitor::operator()(Value &V) { return this->visitValue(V); }
 
@@ -272,13 +273,12 @@ bool fetchConstantString(Value *value, string &result) {
     return false;
   }
 
-  string tmp = CDA->getAsCString().str();
+  string raw = unescape(CDA->getAsCString().str());
   const int MAX_LENGTH = 30;
-  if (tmp.size() > MAX_LENGTH) {
-    result = "\"" + tmp.substr(0, MAX_LENGTH - 3) + "...\"";
-  } else {
-    result = "\"" + tmp + "\"";
+  if (raw.size() > MAX_LENGTH) {
+    raw = raw.substr(0, MAX_LENGTH - 3) + "...";
   }
+  result = "\"" + raw + "\"";
   return true;
 }
 
@@ -302,4 +302,36 @@ template <typename T> string toString(T *t) {
   t->print(stream);
   stream.flush();
   return buffer;
+}
+
+string unescape(string s) {
+  string output;
+  for (char c : s) {
+    switch (c) {
+    case '\\':
+      output += "\\\\";
+      break;
+    case '\"':
+      output += "\\\"";
+      break;
+    case '\r':
+      output += "\\r";
+      break;
+    case '\n':
+      output += "\\n";
+      break;
+    case '\f':
+      output += "\\f";
+      break;
+    case '\t':
+      output += "\\t";
+      break;
+    case '\v':
+      output += "\\v";
+      break;
+    default:
+      output += c;
+    }
+  }
+  return output;
 }
