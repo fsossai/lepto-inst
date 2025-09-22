@@ -4,3 +4,5 @@ add_llvm_library(
   LeptoInstVisitor.cpp
   Pass.cpp
 )
+
+target_link_libraries(LeptoInst LLVMDemangle)
