@@ -1,10 +1,10 @@
-#include <cxxabi.h>
 #include <iostream>
 #include <iterator>
 #include <regex>
 #include <sstream>
 #include <vector>
 
+#include "llvm/Demangle/Demangle.h"
 #include "llvm/IR/Function.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/Metadata.h"
@@ -251,17 +251,7 @@ string detemplate(string s) {
 }
 
 string demangleName(string mangledName) {
-  int status = 0;
-  char *demangled =
-      abi::__cxa_demangle(mangledName.c_str(), nullptr, nullptr, &status);
-
-  if (status == 0 && demangled) {
-    string result(demangled);
-    free(demangled);
-    return result;
-  } else {
-    return mangledName;
-  }
+  return llvm::demangle(mangledName.c_str());
 }
 
 bool fetchConstantString(Value *value, string &result) {
