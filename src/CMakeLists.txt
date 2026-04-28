@@ -5,4 +5,4 @@ add_llvm_library(
   Pass.cpp
 )
 
-target_link_libraries(LeptoInst LLVMDemangle)
+target_link_libraries(LeptoInst PRIVATE LLVMDemangle)
