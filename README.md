@@ -2,6 +2,14 @@
 
 _LLVM instructions have never been so concise_
 
+LeptoInst is an LLVM instruction visitor that renders IR in a shorter, more readable form.
+The concise output is meant to emphasize the data flow.
+
+**Note:** LeptoInst was conceived when LLVM IR still used typed pointers, before opaque
+pointers removed pointee types from pointer syntax.
+With typed-pointer IR, LeptoInst behaves as illustrated below.
+
+
 __Before__: 
 ```c++
 errs() << I << "\n";
@@ -25,6 +33,12 @@ errs() << lepto(I) << "\n";
 %304 = gep %303, 0, 1
 call std::__cxx11::basic_string (%20, %28, %21)
 ```
+
+Modern opaque-pointer IR is less verbose, but concise instructions and
+demangled C++ function names are still useful when inspecting compiler output.
+The current branch supports LLVM 22. For older toolchains, compatibility tags
+are available, including `llvm14-compatible` and `llvm16-compatible`.
+
 
 ## Build and run
 
