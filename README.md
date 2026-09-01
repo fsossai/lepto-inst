@@ -3,10 +3,7 @@
 _LLVM instructions have never been so concise_
 
 LeptoInst is an LLVM instruction visitor that renders IR in a shorter, more readable form.
-The concise output is meant to emphasize the data flow.
-
-The example below is a basic block emitted for `std::map` node insertion in the
-bundled route-finding demo.
+The concise output is meant to emphasize the data flow and minimize types.
 
 **Without LeptoInst:**
 
