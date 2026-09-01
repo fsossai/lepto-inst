@@ -3,7 +3,7 @@
 _LLVM instructions have never been so concise_
 
 LeptoInst is an LLVM instruction visitor that renders IR in a shorter, more readable form.
-The concise output is meant to emphasize the data flow and minimize types.
+The concise output emphasizes data flow while minimizing type information, attributes, and metadata.
 
 **Without LeptoInst:**
 
@@ -19,7 +19,7 @@ store i32 %72, ptr %125, align 4, !tbaa !41, !noalias !38
 %126 = getelementptr inbounds nuw i8, ptr %124, i64 32
 store i32 0, ptr %126, align 8, !tbaa !43, !noalias !38
 %127 = getelementptr inbounds nuw i8, ptr %124, i64 16
-call void @llvm.memset.p0.i64(ptr noundef nonnull align 8 dereferenceable(16) %124, i8 0, i64 16, i1 false)
+call void @_ZNSt3__127__tree_balance_after_insertB9nqn220108IPNS_16__tree_node_baseIPvEEEEvT_S5_(ptr noundef nonnull %122, ptr noundef nonnull %122) #16
 store ptr %119, ptr %127, align 8, !tbaa !22
 store ptr %124, ptr %120, align 8, !tbaa !25
 %128 = load ptr, ptr %8, align 8, !tbaa !9
@@ -43,7 +43,7 @@ store %72 to %125
 %126 = gep %124, 32
 store 0 to %126
 %127 = gep %124, 16
-call llvm.memset.p0.i64 (%124, 0, 16, false)
+call void std::__1::__tree_balance_after_insert (%122, %122)
 store %119 to %127
 store %124 to %120
 %128 = load %8
