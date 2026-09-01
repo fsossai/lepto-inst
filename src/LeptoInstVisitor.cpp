@@ -146,6 +146,21 @@ string LeptoInstVisitor::visitICmpInst(ICmpInst &I) {
   return output;
 }
 
+string LeptoInstVisitor::visitPtrToIntInst(PtrToIntInst &I) {
+  return getId(&I) + " = ptrtoint " + getId(I.getOperand(0)) + " to " +
+         getTypeStr(I.getType());
+}
+
+string LeptoInstVisitor::visitSelectInst(SelectInst &I) {
+  return getId(&I) + " = select " + getId(I.getCondition()) + ", " +
+         getId(I.getTrueValue()) + ", " + getId(I.getFalseValue());
+}
+
+string LeptoInstVisitor::visitZExtInst(ZExtInst &I) {
+  return getId(&I) + " = zext " + getId(I.getOperand(0)) + " to " +
+         getTypeStr(I.getType());
+}
+
 string LeptoInstVisitor::visitBitCastInst(BitCastInst &BC) {
   string output;
   output += getId(&BC) += " = bitcast " + getId(BC.getOperand(0));

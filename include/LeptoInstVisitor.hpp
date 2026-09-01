@@ -24,7 +24,10 @@ public:
   std::string visitInvokeInst(llvm::InvokeInst &);
   std::string visitLoadInst(llvm::LoadInst &);
   std::string visitPHINode(llvm::PHINode &);
+  std::string visitPtrToIntInst(llvm::PtrToIntInst &);
   std::string visitReturnInst(llvm::ReturnInst &RI);
+  std::string visitSelectInst(llvm::SelectInst &);
   std::string visitStoreInst(llvm::StoreInst &);
   std::string visitValue(llvm::Value &);
+  std::string visitZExtInst(llvm::ZExtInst &);
 };
