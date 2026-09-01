@@ -8,6 +8,9 @@ compile: build
 build:
 	cmake -S . -B $(BUILD_DIR) -DCMAKE_BUILD_TYPE=Debug
 
+format:
+	find ./src -regex '.*\.[c|h]pp' | xargs clang-format -i
+
 clean:
 	rm -rf build
 	rm -f compile_commands.json
