@@ -11,8 +11,11 @@ build:
 format:
 	find ./src -regex '.*\.[c|h]pp' | xargs clang-format -i
 
+demo: build
+	cmake --build $(BUILD_DIR) --target demo
+
 clean:
 	rm -rf build
 	rm -f compile_commands.json
 
-.PHONY: build clean compile
+.PHONY: build clean compile demo

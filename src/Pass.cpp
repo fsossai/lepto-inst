@@ -21,8 +21,8 @@ void printFunction(Function &F) {
   LeptoInstVisitor lepto;
   for (auto &BB : F) {
     for (auto &I : BB) {
-      errs() << "Before: " << I << "\n";
-      errs() << "After: " << lepto(I) << "\n\n";
+      errs() << "Before : " << I << "\n";
+      errs() << "After  : " << lepto(I) << "\n\n";
     }
   }
 }

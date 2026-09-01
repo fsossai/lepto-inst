@@ -37,6 +37,13 @@ cmake -S . -B build -DLLVM_DIR=/path/to/llvm/lib/cmake/llvm
 cmake --build build
 ```
 
+To try it immediately, compile the included route-finding example to LLVM
+bitcode and run the pass over it:
+
+```sh
+make demo
+```
+
 Run it with LLVM 22:
 
 ```sh

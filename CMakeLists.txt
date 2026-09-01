@@ -24,4 +24,26 @@ add_custom_target(
 
 include_directories(include)
 add_subdirectory(src)
+
+set(LEPTOINST_DEMO_BITCODE "${CMAKE_CURRENT_BINARY_DIR}/demo.bc")
+add_custom_target(
+  demo
+  COMMAND ${LLVM_TOOLS_BINARY_DIR}/clang++
+    -std=c++17
+    -O1
+    -fno-exceptions
+    -fno-rtti
+    -emit-llvm
+    -c ${CMAKE_CURRENT_SOURCE_DIR}/examples/demo.cpp
+    -o ${LEPTOINST_DEMO_BITCODE}
+  COMMAND ${LLVM_TOOLS_BINARY_DIR}/opt
+    -load-pass-plugin=$<TARGET_FILE:LeptoInst>
+    -passes=lepto-inst
+    -disable-output
+    ${LEPTOINST_DEMO_BITCODE}
+  DEPENDS LeptoInst
+  USES_TERMINAL
+  VERBATIM
+)
+
 # add_llvm_loadable_module(LeptoInst LeptoInst.cpp)
