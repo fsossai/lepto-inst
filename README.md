@@ -25,3 +25,23 @@ errs() << lepto(I) << "\n";
 %304 = gep %303, 0, 1
 call std::__cxx11::basic_string (%20, %28, %21)
 ```
+
+## Build and run
+
+LeptoInst supports LLVM 22's new pass manager and retains its legacy pass
+registration for older LLVM releases. Build the plugin against the same LLVM
+installation that provides `opt`:
+
+```sh
+cmake -S . -B build -DLLVM_DIR=/path/to/llvm/lib/cmake/llvm
+cmake --build build
+```
+
+Run it with LLVM 22:
+
+```sh
+opt -load-pass-plugin=build/src/LeptoInst.dylib \
+  -passes=lepto-inst -disable-output input.ll
+```
+
+On Linux, the plugin filename uses the `.so` extension instead of `.dylib`.

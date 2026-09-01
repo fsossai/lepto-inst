@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.13)
 project(LeptoInst)
 
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 find_package(LLVM REQUIRED CONFIG)
 list(APPEND CMAKE_MODULE_PATH "${LLVM_CMAKE_DIR}")
 include(AddLLVM)
@@ -21,4 +25,3 @@ add_custom_target(
 include_directories(include)
 add_subdirectory(src)
 # add_llvm_loadable_module(LeptoInst LeptoInst.cpp)
-
