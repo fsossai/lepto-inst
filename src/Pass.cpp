@@ -28,6 +28,8 @@ void printFunction(Function &F) {
 }
 
 struct LeptoInstPass : PassInfoMixin<LeptoInstPass> {
+  static bool isRequired() { return true; }
+
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &) {
     printFunction(F);
     return PreservedAnalyses::all();

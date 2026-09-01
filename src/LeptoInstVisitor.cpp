@@ -139,7 +139,8 @@ string LeptoInstVisitor::visitCallInst(CallInst &CI) {
 
 string LeptoInstVisitor::visitICmpInst(ICmpInst &I) {
   string output;
-  output += getId(&I) + " = icmp ";
+  output += getId(&I) + " = icmp " +
+            CmpInst::getPredicateName(I.getPredicate()).str() + " ";
   output += getId(I.getOperand(0)) + ", ";
   output += getId(I.getOperand(1));
   return output;
@@ -152,10 +153,13 @@ string LeptoInstVisitor::visitBitCastInst(BitCastInst &BC) {
 }
 
 string LeptoInstVisitor::visitBranchInst(BranchInst &BI) {
-  string output;
-  output += "br";
+  string output = "br ";
   if (BI.isConditional()) {
-    output += " " + getId(BI.getCondition());
+    output += getId(BI.getCondition()) + ", ";
+  }
+  output += getId(BI.getSuccessor(0));
+  if (BI.isConditional()) {
+    output += ", " + getId(BI.getSuccessor(1));
   }
   return output;
 }
@@ -203,6 +207,9 @@ string getId(Value *value) {
     return buffer;
   }
   if (auto CI = dyn_cast<ConstantInt>(value)) {
+    if (CI->getType()->isIntegerTy(1)) {
+      return CI->isZero() ? "false" : "true";
+    }
     return to_string(CI->getSExtValue());
   }
   if (auto CFP = dyn_cast<ConstantFP>(value)) {
@@ -210,6 +217,12 @@ string getId(Value *value) {
   }
   if (auto GV = dyn_cast<GlobalValue>(value)) {
     return "@" + demangleName(GV->getName().str());
+  }
+  if (auto BB = dyn_cast<BasicBlock>(value)) {
+    raw_string_ostream stream(buffer);
+    BB->printAsOperand(stream, false);
+    stream.flush();
+    return buffer;
   }
 
   buffer = toString(value);
