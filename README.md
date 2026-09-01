@@ -40,8 +40,6 @@ cmake --build build
 Run it with LLVM 22:
 
 ```sh
-opt -load-pass-plugin=build/src/LeptoInst.dylib \
+opt -load-pass-plugin=build/src/LeptoInst.so \
   -passes=lepto-inst -disable-output input.ll
 ```
-
-On Linux, the plugin filename uses the `.so` extension instead of `.dylib`.
